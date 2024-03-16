@@ -8,14 +8,18 @@ import (
 )
 
 func (app *application) routes() http.Handler {
-	mux := chi.NewRouter()
-	mux.Use(cors.Handler(cors.Options{AllowedOrigins: []string{"http://localhost:3000", "http://localhost:3001"},
+	router := chi.NewRouter()
+	router.Use(cors.Handler(cors.Options{AllowedOrigins: []string{"http://localhost:3000", "http://localhost:3001"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders: []string{"Link"},
 		AllowCredentials: true,
 		MaxAge: 300, 
 		}))
-	mux.Get("/", app.Home)
-	return mux
+	v1Router := chi.NewRouter()
+	router.Mount("/v1", v1Router)
+	v1Router.Get("/healthz", app.HandlerReadiness)
+	v1Router.Get("/err", app.HandlerError)
+
+	return router
 }
