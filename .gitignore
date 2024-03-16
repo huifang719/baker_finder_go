@@ -1,0 +1,5 @@
+*.txt
+.air.toml
+tmp
+.env
+vendor
