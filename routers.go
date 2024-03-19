@@ -17,6 +17,7 @@ func (app *application) routes() http.Handler {
 		MaxAge: 300, 
 		}))
 	v1Router := chi.NewRouter()
+	// v1 router, in case we want to add more versions with breaking changes in the future while v1 is still in use
 	router.Mount("/v1", v1Router)
 	v1Router.Get("/healthz", app.HandlerReadiness)
 	v1Router.Get("/err", app.HandlerError)

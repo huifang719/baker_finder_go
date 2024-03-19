@@ -28,4 +28,8 @@ CREATE TABLE reviews(
   rating NUMERIC,
   user_name TEXT
 );
+
 -- +goose Down
+DROP TABLE users;
+DROP TABLE bakers;
+DROP TABLE reviews;
