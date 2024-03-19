@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -8,12 +9,15 @@ import (
 	"os"
 	"time"
 
+	"github.com/huifang719/baker_finder_go/internal/database"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type config struct {
 	port int
 	env string
+	DB *database.Queries
 }
 
 type application struct {
@@ -40,6 +44,15 @@ func main() {
 	testHost := os.Getenv("TEST_HOST")
 	fmt.Println(testHost)
 
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		log.Fatal("DATABASE_URL is not found in the environment")
+	}
+	connection, err := sql.Open("postgres", dbURL)
+
+	if err != nil {
+		log.Fatal("Can not connect to database", err)
+	}
 
 	var cfg config
 	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
@@ -47,6 +60,7 @@ func main() {
 	flag.Parse()
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	cfg.DB = database.New(connection)
 
 	app := &application{
 		config: cfg,
@@ -56,7 +70,7 @@ func main() {
 	}
 
 	// starting the server 
-	err := app.serve()
+	err = app.serve()
 	if err != nil {
 		app.errorLog.Println(err)
 		log.Fatal(err)	
