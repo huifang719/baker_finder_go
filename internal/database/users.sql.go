@@ -7,10 +7,54 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+const createBaker = `-- name: CreateBaker :one
+INSERT INTO bakers (img, name, address, suburb, postcode, contact, specialty, creator)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
+`
+
+type CreateBakerParams struct {
+	Img       sql.NullString
+	Name      sql.NullString
+	Address   sql.NullString
+	Suburb    sql.NullString
+	Postcode  sql.NullString
+	Contact   sql.NullString
+	Specialty sql.NullString
+	Creator   sql.NullString
+}
+
+func (q *Queries) CreateBaker(ctx context.Context, arg CreateBakerParams) (Baker, error) {
+	row := q.db.QueryRowContext(ctx, createBaker,
+		arg.Img,
+		arg.Name,
+		arg.Address,
+		arg.Suburb,
+		arg.Postcode,
+		arg.Contact,
+		arg.Specialty,
+		arg.Creator,
+	)
+	var i Baker
+	err := row.Scan(
+		&i.ID,
+		&i.Img,
+		&i.Name,
+		&i.Address,
+		&i.Suburb,
+		&i.Postcode,
+		&i.Contact,
+		&i.Specialty,
+		&i.Creator,
+	)
+	return i, err
+}
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, created_at, updated_at, user_name, user_type, email, password_digest)

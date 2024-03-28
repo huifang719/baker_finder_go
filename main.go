@@ -11,6 +11,8 @@ import (
 
 	"github.com/huifang719/baker_finder_go/internal/database"
 	"github.com/joho/godotenv"
+
+	// need import the pq driver to use the postgres database
 	_ "github.com/lib/pq"
 )
 
