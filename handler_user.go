@@ -44,6 +44,7 @@ func (app *application)  handlerCreateUser(w http.ResponseWriter, r *http.Reques
 			respondWithError(w, 400, "User name already exists")
 			return 
 		}
+		respondWithError(w, 500, "Failed to create user")
 		return
 	}
 	repondWithJSON(w, 200, user)

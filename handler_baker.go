@@ -43,6 +43,10 @@ func (app *application)  handlerCreateBaker(w http.ResponseWriter, r *http.Reque
 	})
 	if err != nil {
 		app.errorLog.Println(err)
+		if err.Error() == "pq: duplicate key value violates unique constraint \"bakers_name_key\"" {
+			respondWithError(w, 400, "This baker already exists")
+			return
+		}
 		respondWithError(w, 500, "Failed to create baker")
 		return
 	}
