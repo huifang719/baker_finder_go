@@ -12,23 +12,23 @@ import (
 )
 
 type Baker struct {
-	ID        int32
+	ID        uuid.UUID
 	Img       sql.NullString
-	Name      sql.NullString
+	Name      string
 	Address   sql.NullString
 	Suburb    sql.NullString
 	Postcode  sql.NullString
 	Contact   sql.NullString
 	Specialty sql.NullString
-	Creator   sql.NullString
+	Creator   uuid.UUID
 }
 
 type Review struct {
-	ID       int32
-	BakerID  sql.NullString
-	Review   sql.NullString
-	UserName sql.NullString
-	Rating   sql.NullString
+	ID      uuid.UUID
+	BakerID uuid.UUID
+	Review  sql.NullString
+	Rating  sql.NullString
+	UserID  uuid.UUID
 }
 
 type User struct {

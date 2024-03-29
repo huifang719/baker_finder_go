@@ -10,12 +10,18 @@ import (
 	"github.com/huifang719/baker_finder_go/internal/database"
 )
 
+type paramters struct {
+	BakerID  uuid.UUID `json:"baker_id"`
+	Review   string `json:"review"`
+	Rating   int32 `json:"rating"`
+	UserName string `json:"user_name"`
+}
 func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Request) {
 	type paramters struct {
-		BakerID  int32 `json:"baker_id"`
+		BakerID  uuid.UUID `json:"baker_id"`
 		Review   string `json:"review"`
 		Rating   int32 `json:"rating"`
-		UserName string `json:"user_name"`
+		UserID uuid.UUID `json:"user_id"`
 	}
 	decoder := json.NewDecoder(r.Body)	
 	params := paramters{}
@@ -28,11 +34,11 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 	// Create a new baker
 
 	review, err := app.config.DB.CreateReview(r.Context(), database.CreateReviewParams{
-		ID:       int32(uuid.New().ID()),
-		BakerID:  sql.NullString{String: fmt.Sprint(params.BakerID), Valid: true},
+		ID:       uuid.New(),
+		BakerID:  params.BakerID,
 		Review:   sql.NullString{String: params.Review, Valid: true},
 		Rating:   sql.NullString{String: fmt.Sprint(params.Rating), Valid: true},
-		UserName: sql.NullString{String: params.UserName, Valid: true},
+		UserID:  params.UserID,
 	})
 	if err != nil {
 		app.errorLog.Println(err)
@@ -44,7 +50,7 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 
 func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Request) {
 	type paramters struct {
-		ReviewID  int32 `json:"review_id"`
+		ReviewID  uuid.UUID `json:"review_id"`
 	}
 	decoder := json.NewDecoder(r.Body)
 	params := paramters{}
@@ -68,7 +74,7 @@ func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Requ
 // get all reviews for a baker
 func (app *application) handlerGetReviews(w http.ResponseWriter, r *http.Request) {
 	type paramters struct {
-		BakerID  int32 `json:"baker_id"`
+		BakerID  uuid.UUID `json:"baker_id"`
 	}
 	decoder := json.NewDecoder(r.Body)
 	params := paramters{}
@@ -80,7 +86,7 @@ func (app *application) handlerGetReviews(w http.ResponseWriter, r *http.Request
 	}
 
 	// Get all reviews for a baker
-	reviews,err := app.config.DB.GetAllReviews(r.Context(), sql.NullString{String: fmt.Sprint(params.BakerID), Valid: true})
+	reviews,err := app.config.DB.GetAllReviews(r.Context(), params.BakerID)
 	if err != nil {
 		app.errorLog.Println(err)
 		respondWithError(w, 500, "Failed to get the reviews")

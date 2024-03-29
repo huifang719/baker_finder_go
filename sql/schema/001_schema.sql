@@ -30,6 +30,6 @@ CREATE TABLE reviews(
 );
 
 -- +goose Down
-DROP TABLE users;
+
 DROP TABLE bakers;
 DROP TABLE reviews;

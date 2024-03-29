@@ -20,15 +20,15 @@ RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
 `
 
 type CreateBakerParams struct {
-	ID        int32
+	ID        uuid.UUID
 	Img       sql.NullString
-	Name      sql.NullString
+	Name      string
 	Address   sql.NullString
 	Suburb    sql.NullString
 	Postcode  sql.NullString
 	Contact   sql.NullString
 	Specialty sql.NullString
-	Creator   sql.NullString
+	Creator   uuid.UUID
 }
 
 func (q *Queries) CreateBaker(ctx context.Context, arg CreateBakerParams) (Baker, error) {
@@ -59,17 +59,17 @@ func (q *Queries) CreateBaker(ctx context.Context, arg CreateBakerParams) (Baker
 }
 
 const createReview = `-- name: CreateReview :one
-INSERT INTO reviews (id, baker_id, review, rating, user_name)
+INSERT INTO reviews (id, baker_id, review, rating, user_id)
 VALUES ($1, $2, $3, $4, $5)
-RETURNING id, baker_id, review, user_name, rating
+RETURNING id, baker_id, review, rating, user_id
 `
 
 type CreateReviewParams struct {
-	ID       int32
-	BakerID  sql.NullString
-	Review   sql.NullString
-	Rating   sql.NullString
-	UserName sql.NullString
+	ID      uuid.UUID
+	BakerID uuid.UUID
+	Review  sql.NullString
+	Rating  sql.NullString
+	UserID  uuid.UUID
 }
 
 func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Review, error) {
@@ -78,15 +78,15 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 		arg.BakerID,
 		arg.Review,
 		arg.Rating,
-		arg.UserName,
+		arg.UserID,
 	)
 	var i Review
 	err := row.Scan(
 		&i.ID,
 		&i.BakerID,
 		&i.Review,
-		&i.UserName,
 		&i.Rating,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -136,7 +136,7 @@ WHERE id = $1
 RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
 `
 
-func (q *Queries) DeleteBaker(ctx context.Context, id int32) (Baker, error) {
+func (q *Queries) DeleteBaker(ctx context.Context, id uuid.UUID) (Baker, error) {
 	row := q.db.QueryRowContext(ctx, deleteBaker, id)
 	var i Baker
 	err := row.Scan(
@@ -156,28 +156,28 @@ func (q *Queries) DeleteBaker(ctx context.Context, id int32) (Baker, error) {
 const deleteReview = `-- name: DeleteReview :one
 DELETE FROM reviews
 WHERE id = $1
-RETURNING id, baker_id, review, user_name, rating
+RETURNING id, baker_id, review, rating, user_id
 `
 
-func (q *Queries) DeleteReview(ctx context.Context, id int32) (Review, error) {
+func (q *Queries) DeleteReview(ctx context.Context, id uuid.UUID) (Review, error) {
 	row := q.db.QueryRowContext(ctx, deleteReview, id)
 	var i Review
 	err := row.Scan(
 		&i.ID,
 		&i.BakerID,
 		&i.Review,
-		&i.UserName,
 		&i.Rating,
+		&i.UserID,
 	)
 	return i, err
 }
 
 const getAllReviews = `-- name: GetAllReviews :many
-SELECT id, baker_id, review, user_name, rating FROM reviews
+SELECT id, baker_id, review, rating, user_id FROM reviews
 WHERE baker_id = $1
 `
 
-func (q *Queries) GetAllReviews(ctx context.Context, bakerID sql.NullString) ([]Review, error) {
+func (q *Queries) GetAllReviews(ctx context.Context, bakerID uuid.UUID) ([]Review, error) {
 	rows, err := q.db.QueryContext(ctx, getAllReviews, bakerID)
 	if err != nil {
 		return nil, err
@@ -190,8 +190,8 @@ func (q *Queries) GetAllReviews(ctx context.Context, bakerID sql.NullString) ([]
 			&i.ID,
 			&i.BakerID,
 			&i.Review,
-			&i.UserName,
 			&i.Rating,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -211,7 +211,7 @@ SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FRO
 WHERE id = $1
 `
 
-func (q *Queries) GetBakerById(ctx context.Context, id int32) (Baker, error) {
+func (q *Queries) GetBakerById(ctx context.Context, id uuid.UUID) (Baker, error) {
 	row := q.db.QueryRowContext(ctx, getBakerById, id)
 	var i Baker
 	err := row.Scan(
@@ -273,15 +273,15 @@ RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
 `
 
 type UpdateBakerParams struct {
-	ID        int32
+	ID        uuid.UUID
 	Img       sql.NullString
-	Name      sql.NullString
+	Name      string
 	Address   sql.NullString
 	Suburb    sql.NullString
 	Postcode  sql.NullString
 	Contact   sql.NullString
 	Specialty sql.NullString
-	Creator   sql.NullString
+	Creator   uuid.UUID
 }
 
 func (q *Queries) UpdateBaker(ctx context.Context, arg UpdateBakerParams) (Baker, error) {

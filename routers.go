@@ -28,5 +28,6 @@ func (app *application) routes() http.Handler {
 	v1Router.Post("/reviewsByBaker", app.handlerGetReviews)
 	v1Router.Post("/getBakersByPostcode", app.handlerGetBakers)
 	v1Router.Patch("/baker", app.handlerUpdateBaker)
+	v1Router.Post("/user", app.handlerCreateUser)
 	return router
 }
