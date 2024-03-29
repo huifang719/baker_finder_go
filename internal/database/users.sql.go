@@ -206,6 +206,28 @@ func (q *Queries) GetAllReviews(ctx context.Context, bakerID sql.NullString) ([]
 	return items, nil
 }
 
+const getBakerById = `-- name: GetBakerById :one
+SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FROM bakers
+WHERE id = $1
+`
+
+func (q *Queries) GetBakerById(ctx context.Context, id int32) (Baker, error) {
+	row := q.db.QueryRowContext(ctx, getBakerById, id)
+	var i Baker
+	err := row.Scan(
+		&i.ID,
+		&i.Img,
+		&i.Name,
+		&i.Address,
+		&i.Suburb,
+		&i.Postcode,
+		&i.Contact,
+		&i.Specialty,
+		&i.Creator,
+	)
+	return i, err
+}
+
 const getBakersByPostcode = `-- name: GetBakersByPostcode :many
 SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FROM bakers
 WHERE postcode = $1
