@@ -27,8 +27,8 @@ type Review struct {
 	ID       int32
 	BakerID  sql.NullString
 	Review   sql.NullString
-	Rating   sql.NullString
 	UserName sql.NullString
+	Rating   sql.NullString
 }
 
 type User struct {

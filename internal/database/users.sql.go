@@ -61,7 +61,7 @@ func (q *Queries) CreateBaker(ctx context.Context, arg CreateBakerParams) (Baker
 const createReview = `-- name: CreateReview :one
 INSERT INTO reviews (id, baker_id, review, rating, user_name)
 VALUES ($1, $2, $3, $4, $5)
-RETURNING id, baker_id, review, rating, user_name
+RETURNING id, baker_id, review, user_name, rating
 `
 
 type CreateReviewParams struct {
@@ -85,8 +85,8 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 		&i.ID,
 		&i.BakerID,
 		&i.Review,
-		&i.Rating,
 		&i.UserName,
+		&i.Rating,
 	)
 	return i, err
 }
@@ -126,6 +126,25 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.UserType,
 		&i.Email,
 		&i.PasswordDigest,
+	)
+	return i, err
+}
+
+const deleteReview = `-- name: DeleteReview :one
+DELETE FROM reviews
+WHERE id = $1
+RETURNING id, baker_id, review, user_name, rating
+`
+
+func (q *Queries) DeleteReview(ctx context.Context, id int32) (Review, error) {
+	row := q.db.QueryRowContext(ctx, deleteReview, id)
+	var i Review
+	err := row.Scan(
+		&i.ID,
+		&i.BakerID,
+		&i.Review,
+		&i.UserName,
+		&i.Rating,
 	)
 	return i, err
 }
