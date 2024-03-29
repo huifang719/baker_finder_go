@@ -26,5 +26,6 @@ func (app *application) routes() http.Handler {
 	v1Router.Delete("/baker", app.handlerDeleteBaker)
 	v1Router.Delete("/review", app.handlerDeleteReviews)
 	v1Router.Post("/reviewsByBaker", app.handlerGetReviews)
+	v1Router.Post("/getBakersByPostcode", app.handlerGetBakers)
 	return router
 }

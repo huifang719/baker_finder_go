@@ -23,6 +23,10 @@ DELETE FROM reviews
 WHERE id = $1
 RETURNING *;
 
+-- name: GetBakersByPostcode :many
+SELECT * FROM bakers
+WHERE postcode = $1;
+
 -- name: GetAllReviews :many
 SELECT * FROM reviews
 WHERE baker_id = $1;

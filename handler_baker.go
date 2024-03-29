@@ -71,3 +71,27 @@ func (app *application) handlerDeleteBaker(w http.ResponseWriter, r *http.Reques
 	}
 	repondWithJSON(w, 200, baker)	
 }
+
+// get all bakers from the same postcode
+func (app *application) handlerGetBakers(w http.ResponseWriter, r *http.Request) {
+	type paramters struct {
+		Postcode string `json:"postcode"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	params := paramters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, 400, "Invalid request")
+		return
+	}
+
+	// Get all bakers
+	bakers, err := app.config.DB.GetBakersByPostcode(r.Context(), sql.NullString{String: params.Postcode, Valid: true})
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get bakers")
+		return
+	}
+ 
+	repondWithJSON(w, 200, bakers)
+}

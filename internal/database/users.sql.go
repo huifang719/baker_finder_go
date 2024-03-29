@@ -205,3 +205,41 @@ func (q *Queries) GetAllReviews(ctx context.Context, bakerID sql.NullString) ([]
 	}
 	return items, nil
 }
+
+const getBakersByPostcode = `-- name: GetBakersByPostcode :many
+SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FROM bakers
+WHERE postcode = $1
+`
+
+func (q *Queries) GetBakersByPostcode(ctx context.Context, postcode sql.NullString) ([]Baker, error) {
+	rows, err := q.db.QueryContext(ctx, getBakersByPostcode, postcode)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Baker
+	for rows.Next() {
+		var i Baker
+		if err := rows.Scan(
+			&i.ID,
+			&i.Img,
+			&i.Name,
+			&i.Address,
+			&i.Suburb,
+			&i.Postcode,
+			&i.Contact,
+			&i.Specialty,
+			&i.Creator,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
