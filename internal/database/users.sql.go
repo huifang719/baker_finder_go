@@ -58,6 +58,39 @@ func (q *Queries) CreateBaker(ctx context.Context, arg CreateBakerParams) (Baker
 	return i, err
 }
 
+const createReview = `-- name: CreateReview :one
+INSERT INTO reviews (id, baker_id, review, rating, user_name)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, baker_id, review, rating, user_name
+`
+
+type CreateReviewParams struct {
+	ID       int32
+	BakerID  sql.NullString
+	Review   sql.NullString
+	Rating   sql.NullString
+	UserName sql.NullString
+}
+
+func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Review, error) {
+	row := q.db.QueryRowContext(ctx, createReview,
+		arg.ID,
+		arg.BakerID,
+		arg.Review,
+		arg.Rating,
+		arg.UserName,
+	)
+	var i Review
+	err := row.Scan(
+		&i.ID,
+		&i.BakerID,
+		&i.Review,
+		&i.Rating,
+		&i.UserName,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, created_at, updated_at, user_name, user_type, email, password_digest)
 VALUES ($1, $2, $3, $4, $5, $6, $7)

@@ -22,5 +22,6 @@ func (app *application) routes() http.Handler {
 	v1Router.Get("/healthz", app.HandlerReadiness)
 	v1Router.Get("/err", app.HandlerError)
 	v1Router.Post("/baker", app.handlerCreateBaker)
+	v1Router.Post("/review", app.handlerCreateReview)
 	return router
 }

@@ -8,3 +8,7 @@ INSERT INTO bakers (id, img, name, address, suburb, postcode, contact, specialty
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING *;
 
+-- name: CreateReview :one
+INSERT INTO reviews (id, baker_id, review, rating, user_name)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
