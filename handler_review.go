@@ -64,3 +64,27 @@ func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Requ
 	}
 	repondWithJSON(w, 200, review)
 }
+
+// get all reviews for a baker
+func (app *application) handlerGetReviews(w http.ResponseWriter, r *http.Request) {
+	type paramters struct {
+		BakerID  int32 `json:"baker_id"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	params := paramters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		app.errorLog.Print(err)
+		respondWithError(w, 400, "Invalid request")
+		return
+	}
+
+	// Get all reviews for a baker
+	reviews,err := app.config.DB.GetAllReviews(r.Context(), sql.NullString{String: fmt.Sprint(params.BakerID), Valid: true})
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get the reviews")
+		return
+	}
+	repondWithJSON(w, 200, reviews)
+}

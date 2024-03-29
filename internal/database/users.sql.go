@@ -171,3 +171,37 @@ func (q *Queries) DeleteReview(ctx context.Context, id int32) (Review, error) {
 	)
 	return i, err
 }
+
+const getAllReviews = `-- name: GetAllReviews :many
+SELECT id, baker_id, review, user_name, rating FROM reviews
+WHERE baker_id = $1
+`
+
+func (q *Queries) GetAllReviews(ctx context.Context, bakerID sql.NullString) ([]Review, error) {
+	rows, err := q.db.QueryContext(ctx, getAllReviews, bakerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Review
+	for rows.Next() {
+		var i Review
+		if err := rows.Scan(
+			&i.ID,
+			&i.BakerID,
+			&i.Review,
+			&i.UserName,
+			&i.Rating,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

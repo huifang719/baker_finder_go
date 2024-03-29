@@ -22,3 +22,7 @@ RETURNING *;
 DELETE FROM reviews
 WHERE id = $1
 RETURNING *;
+
+-- name: GetAllReviews :many
+SELECT * FROM reviews
+WHERE baker_id = $1;
