@@ -4,7 +4,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING *;
 
 -- name: CreateBaker :one
-INSERT INTO bakers (img, name, address, suburb, postcode, contact, specialty, creator)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO bakers (id, img, name, address, suburb, postcode, contact, specialty, creator)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING *;
 

@@ -14,12 +14,13 @@ import (
 )
 
 const createBaker = `-- name: CreateBaker :one
-INSERT INTO bakers (img, name, address, suburb, postcode, contact, specialty, creator)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO bakers (id, img, name, address, suburb, postcode, contact, specialty, creator)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
 `
 
 type CreateBakerParams struct {
+	ID        int32
 	Img       sql.NullString
 	Name      sql.NullString
 	Address   sql.NullString
@@ -32,6 +33,7 @@ type CreateBakerParams struct {
 
 func (q *Queries) CreateBaker(ctx context.Context, arg CreateBakerParams) (Baker, error) {
 	row := q.db.QueryRowContext(ctx, createBaker,
+		arg.ID,
 		arg.Img,
 		arg.Name,
 		arg.Address,

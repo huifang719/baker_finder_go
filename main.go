@@ -43,8 +43,6 @@ func (app *application) serve() error {
 }
 func main() {
 	godotenv.Load()
-	testHost := os.Getenv("TEST_HOST")
-	fmt.Println(testHost)
 
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
@@ -63,7 +61,7 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	cfg.DB = database.New(connection)
-
+  
 	app := &application{
 		config: cfg,
 		infoLog: infoLog,

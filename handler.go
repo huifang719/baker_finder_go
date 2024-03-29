@@ -6,5 +6,8 @@ import (
 
 
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
-	repondWithJSON(w, 200, struct {message string}{message: "hello from baker finder"})
+	type jsonResponse struct {
+		Message string `json:"message"`
+	}
+	repondWithJSON(w, 200, jsonResponse  {Message: "hello from baker finder"})
 }
