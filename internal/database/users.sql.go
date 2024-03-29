@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,13 +20,13 @@ RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
 
 type CreateBakerParams struct {
 	ID        uuid.UUID
-	Img       sql.NullString
+	Img       string
 	Name      string
-	Address   sql.NullString
-	Suburb    sql.NullString
-	Postcode  sql.NullString
-	Contact   sql.NullString
-	Specialty sql.NullString
+	Address   string
+	Suburb    string
+	Postcode  string
+	Contact   string
+	Specialty string
 	Creator   uuid.UUID
 }
 
@@ -67,8 +66,8 @@ RETURNING id, baker_id, review, rating, user_id
 type CreateReviewParams struct {
 	ID      uuid.UUID
 	BakerID uuid.UUID
-	Review  sql.NullString
-	Rating  sql.NullString
+	Review  string
+	Rating  string
 	UserID  uuid.UUID
 }
 
@@ -233,7 +232,7 @@ SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FRO
 WHERE postcode = $1
 `
 
-func (q *Queries) GetBakersByPostcode(ctx context.Context, postcode sql.NullString) ([]Baker, error) {
+func (q *Queries) GetBakersByPostcode(ctx context.Context, postcode string) ([]Baker, error) {
 	rows, err := q.db.QueryContext(ctx, getBakersByPostcode, postcode)
 	if err != nil {
 		return nil, err
@@ -274,13 +273,13 @@ RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
 
 type UpdateBakerParams struct {
 	ID        uuid.UUID
-	Img       sql.NullString
+	Img       string
 	Name      string
-	Address   sql.NullString
-	Suburb    sql.NullString
-	Postcode  sql.NullString
-	Contact   sql.NullString
-	Specialty sql.NullString
+	Address   string
+	Suburb    string
+	Postcode  string
+	Contact   string
+	Specialty string
 	Creator   uuid.UUID
 }
 

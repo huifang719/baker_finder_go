@@ -36,7 +36,14 @@ func (app *application)  handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	})
 	if err != nil {
 		app.errorLog.Println(err)
-		respondWithError(w, 500, "Failed to create user")
+		if err.Error() == "pq: duplicate key value violates unique constraint \"users_email_key\"" {
+			respondWithError(w, 400, "Email already exists")
+			return
+		}
+		if err.Error() == "pq: duplicate key value violates unique constraint \"users_user_name_key\"" {
+			respondWithError(w, 400, "User name already exists")
+			return 
+		}
 		return
 	}
 	repondWithJSON(w, 200, user)

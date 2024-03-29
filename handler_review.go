@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,12 +9,6 @@ import (
 	"github.com/huifang719/baker_finder_go/internal/database"
 )
 
-type paramters struct {
-	BakerID  uuid.UUID `json:"baker_id"`
-	Review   string `json:"review"`
-	Rating   int32 `json:"rating"`
-	UserName string `json:"user_name"`
-}
 func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Request) {
 	type paramters struct {
 		BakerID  uuid.UUID `json:"baker_id"`
@@ -36,8 +29,8 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 	review, err := app.config.DB.CreateReview(r.Context(), database.CreateReviewParams{
 		ID:       uuid.New(),
 		BakerID:  params.BakerID,
-		Review:   sql.NullString{String: params.Review, Valid: true},
-		Rating:   sql.NullString{String: fmt.Sprint(params.Rating), Valid: true},
+		Review:   params.Review,
+		Rating:   fmt.Sprint(params.Rating),
 		UserID:  params.UserID,
 	})
 	if err != nil {

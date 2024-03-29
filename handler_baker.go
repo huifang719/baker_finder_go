@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -34,12 +33,12 @@ func (app *application)  handlerCreateBaker(w http.ResponseWriter, r *http.Reque
 	baker, err := app.config.DB.CreateBaker(r.Context(), database.CreateBakerParams{
 		ID:        uuid.New(),
 		Name:      params.Name,
-		Img:       sql.NullString{String: params.Img, Valid: true},
-		Address:   sql.NullString{String: params.Address, Valid: true},
-		Suburb:    sql.NullString{String: params.Suburb, Valid: true},
-		Postcode:  sql.NullString{String: params.Postcode, Valid: true},
-		Contact:   sql.NullString{String: params.Contact, Valid: true},
-		Specialty: sql.NullString{String: params.Specialty, Valid: true},
+		Img:       params.Img,
+		Address:   params.Address,
+		Suburb:    params.Suburb,
+		Postcode:  params.Postcode,
+		Contact:   params.Contact,
+		Specialty: params.Specialty,
 		Creator:   params.Creator,
 	})
 	if err != nil {
@@ -93,13 +92,13 @@ func (app *application) handlerUpdateBaker(w http.ResponseWriter, r *http.Reques
 	updatedBaker, err := app.config.DB.UpdateBaker(r.Context(), database.UpdateBakerParams{
 		ID:        params.BakerID,
 		Name:      params.Name,
-		Img:       sql.NullString{String: params.Img, Valid: true},
-		Address:   sql.NullString{String: params.Address, Valid: true},
-		Suburb:    sql.NullString{String: params.Suburb, Valid: true},
-		Postcode:  sql.NullString{String: params.Postcode, Valid: true},
-		Contact:   sql.NullString{String: params.Contact, Valid: true},
-		Specialty: sql.NullString{String: params.Specialty, Valid: true},
-		Creator:   bakerToUpdate.Creator,
+		Img:       params.Img,
+		Address:   params.Address,
+		Suburb:    params.Suburb,
+		Postcode:  params.Postcode,
+		Contact:   params.Contact,
+		Specialty: params.Specialty,
+		Creator:   params.Creator,
 	})
 	if err != nil {
 		app.errorLog.Println(err)
@@ -122,7 +121,7 @@ func (app *application) handlerGetBakers(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Get all bakers
-	bakers, err := app.config.DB.GetBakersByPostcode(r.Context(), sql.NullString{String: params.Postcode, Valid: true})
+	bakers, err := app.config.DB.GetBakersByPostcode(r.Context(), params.Postcode)
 	if err != nil {
 		app.errorLog.Println(err)
 		respondWithError(w, 500, "Failed to get bakers")

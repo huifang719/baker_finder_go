@@ -5,7 +5,6 @@
 package database
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,21 +12,21 @@ import (
 
 type Baker struct {
 	ID        uuid.UUID
-	Img       sql.NullString
+	Img       string
 	Name      string
-	Address   sql.NullString
-	Suburb    sql.NullString
-	Postcode  sql.NullString
-	Contact   sql.NullString
-	Specialty sql.NullString
+	Address   string
+	Suburb    string
+	Postcode  string
+	Contact   string
+	Specialty string
 	Creator   uuid.UUID
 }
 
 type Review struct {
 	ID      uuid.UUID
 	BakerID uuid.UUID
-	Review  sql.NullString
-	Rating  sql.NullString
+	Review  string
+	Rating  string
 	UserID  uuid.UUID
 }
 
