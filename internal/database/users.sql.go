@@ -243,3 +243,48 @@ func (q *Queries) GetBakersByPostcode(ctx context.Context, postcode sql.NullStri
 	}
 	return items, nil
 }
+
+const updateBaker = `-- name: UpdateBaker :one
+UPDATE bakers SET img = $2, name = $3, address = $4, suburb = $5, postcode = $6, contact = $7, specialty = $8, creator = $9
+WHERE id = $1
+RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
+`
+
+type UpdateBakerParams struct {
+	ID        int32
+	Img       sql.NullString
+	Name      sql.NullString
+	Address   sql.NullString
+	Suburb    sql.NullString
+	Postcode  sql.NullString
+	Contact   sql.NullString
+	Specialty sql.NullString
+	Creator   sql.NullString
+}
+
+func (q *Queries) UpdateBaker(ctx context.Context, arg UpdateBakerParams) (Baker, error) {
+	row := q.db.QueryRowContext(ctx, updateBaker,
+		arg.ID,
+		arg.Img,
+		arg.Name,
+		arg.Address,
+		arg.Suburb,
+		arg.Postcode,
+		arg.Contact,
+		arg.Specialty,
+		arg.Creator,
+	)
+	var i Baker
+	err := row.Scan(
+		&i.ID,
+		&i.Img,
+		&i.Name,
+		&i.Address,
+		&i.Suburb,
+		&i.Postcode,
+		&i.Contact,
+		&i.Specialty,
+		&i.Creator,
+	)
+	return i, err
+}

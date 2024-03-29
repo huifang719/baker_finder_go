@@ -30,3 +30,8 @@ WHERE postcode = $1;
 -- name: GetAllReviews :many
 SELECT * FROM reviews
 WHERE baker_id = $1;
+
+-- name: UpdateBaker :one
+UPDATE bakers SET img = $2, name = $3, address = $4, suburb = $5, postcode = $6, contact = $7, specialty = $8, creator = $9
+WHERE id = $1
+RETURNING *;
