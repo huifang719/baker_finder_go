@@ -23,6 +23,7 @@ func (app *application) routes() http.Handler {
 	v1Router.Get("/err", app.HandlerError)
 	v1Router.Post("/baker", app.handlerCreateBaker)
 	v1Router.Post("/review", app.handlerCreateReview)
+	v1Router.Delete("/baker", app.handlerDeleteBaker)
 	v1Router.Delete("/review", app.handlerDeleteReviews)
 	return router
 }

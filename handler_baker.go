@@ -49,3 +49,25 @@ func (app *application)  handlerCreateBaker(w http.ResponseWriter, r *http.Reque
 	}
 	repondWithJSON(w, 200, baker)	
 }
+
+func (app *application) handlerDeleteBaker(w http.ResponseWriter, r *http.Request) {
+	type paramters struct {
+		BakerID int32 `json:"baker_id"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	params := paramters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, 400, "Invalid request")
+		return
+	}
+
+	// Delete a baker
+	baker,err := app.config.DB.DeleteBaker(r.Context(), params.BakerID)
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to delete baker")
+		return
+	}
+	repondWithJSON(w, 200, baker)	
+}

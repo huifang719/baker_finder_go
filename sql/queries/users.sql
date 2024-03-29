@@ -13,6 +13,11 @@ INSERT INTO reviews (id, baker_id, review, rating, user_name)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
+-- name: DeleteBaker :one
+DELETE FROM bakers
+WHERE id = $1
+RETURNING *;
+
 -- name: DeleteReview :one
 DELETE FROM reviews
 WHERE id = $1

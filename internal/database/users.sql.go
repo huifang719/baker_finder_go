@@ -130,6 +130,29 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const deleteBaker = `-- name: DeleteBaker :one
+DELETE FROM bakers
+WHERE id = $1
+RETURNING id, img, name, address, suburb, postcode, contact, specialty, creator
+`
+
+func (q *Queries) DeleteBaker(ctx context.Context, id int32) (Baker, error) {
+	row := q.db.QueryRowContext(ctx, deleteBaker, id)
+	var i Baker
+	err := row.Scan(
+		&i.ID,
+		&i.Img,
+		&i.Name,
+		&i.Address,
+		&i.Suburb,
+		&i.Postcode,
+		&i.Contact,
+		&i.Specialty,
+		&i.Creator,
+	)
+	return i, err
+}
+
 const deleteReview = `-- name: DeleteReview :one
 DELETE FROM reviews
 WHERE id = $1
