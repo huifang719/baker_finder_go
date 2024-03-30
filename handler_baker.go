@@ -134,3 +134,17 @@ func (app *application) handlerGetBakers(w http.ResponseWriter, r *http.Request)
  
 	repondWithJSON(w, 200, bakers)
 }
+
+// get all bakers from database
+func (app *application) handlerGetAllBakers(w http.ResponseWriter, r *http.Request) {
+	
+	// Get all bakers
+	bakers, err := app.config.DB.ListAllBakers(r.Context())
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get bakers")
+		return
+	}
+ 
+	repondWithJSON(w, 200, bakers)
+}

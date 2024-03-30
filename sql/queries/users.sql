@@ -39,3 +39,6 @@ RETURNING *;
 -- name: GetBakerById :one
 SELECT * FROM bakers
 WHERE id = $1;
+
+-- name: ListAllBakers :many
+SELECT * FROM bakers;

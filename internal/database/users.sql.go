@@ -265,6 +265,43 @@ func (q *Queries) GetBakersByPostcode(ctx context.Context, postcode string) ([]B
 	return items, nil
 }
 
+const listAllBakers = `-- name: ListAllBakers :many
+SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FROM bakers
+`
+
+func (q *Queries) ListAllBakers(ctx context.Context) ([]Baker, error) {
+	rows, err := q.db.QueryContext(ctx, listAllBakers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Baker
+	for rows.Next() {
+		var i Baker
+		if err := rows.Scan(
+			&i.ID,
+			&i.Img,
+			&i.Name,
+			&i.Address,
+			&i.Suburb,
+			&i.Postcode,
+			&i.Contact,
+			&i.Specialty,
+			&i.Creator,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateBaker = `-- name: UpdateBaker :one
 UPDATE bakers SET img = $2, name = $3, address = $4, suburb = $5, postcode = $6, contact = $7, specialty = $8, creator = $9
 WHERE id = $1
