@@ -23,11 +23,12 @@ type Baker struct {
 }
 
 type Review struct {
-	ID      uuid.UUID
-	BakerID uuid.UUID
-	Review  string
-	Rating  string
-	UserID  uuid.UUID
+	ID        uuid.UUID
+	BakerID   uuid.UUID
+	Review    string
+	Rating    string
+	UserID    uuid.UUID
+	CreatedAt time.Time
 }
 
 type User struct {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/huifang719/baker_finder_go/internal/database"
@@ -32,9 +33,18 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 		Review:   params.Review,
 		Rating:   fmt.Sprint(params.Rating),
 		UserID:  params.UserID,
+		CreatedAt: time.Now().UTC(),
 	})
 	if err != nil {
 		app.errorLog.Println(err)
+		if err.Error() == "pq: duplicate key value violates unique constraint \"reviews_user_id_baker_id_key\"" {
+			respondWithError(w, 400, "You have already reviewed this baker")
+			return
+		}
+		if err.Error() == "pq: insert or update on table \"reviews\" violates foreign key constraint \"reviews_baker_id_fkey\"" {
+			respondWithError(w, 400, "This baker does not exist")
+			return
+		}
 		respondWithError(w, 500, "Failed to post the review")
 		return
 	}

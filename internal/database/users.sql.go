@@ -58,17 +58,18 @@ func (q *Queries) CreateBaker(ctx context.Context, arg CreateBakerParams) (Baker
 }
 
 const createReview = `-- name: CreateReview :one
-INSERT INTO reviews (id, baker_id, review, rating, user_id)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, baker_id, review, rating, user_id
+INSERT INTO reviews (id, baker_id, review, rating, user_id, created_at)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, baker_id, review, rating, user_id, created_at
 `
 
 type CreateReviewParams struct {
-	ID      uuid.UUID
-	BakerID uuid.UUID
-	Review  string
-	Rating  string
-	UserID  uuid.UUID
+	ID        uuid.UUID
+	BakerID   uuid.UUID
+	Review    string
+	Rating    string
+	UserID    uuid.UUID
+	CreatedAt time.Time
 }
 
 func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Review, error) {
@@ -78,6 +79,7 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 		arg.Review,
 		arg.Rating,
 		arg.UserID,
+		arg.CreatedAt,
 	)
 	var i Review
 	err := row.Scan(
@@ -86,6 +88,7 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 		&i.Review,
 		&i.Rating,
 		&i.UserID,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -155,7 +158,7 @@ func (q *Queries) DeleteBaker(ctx context.Context, id uuid.UUID) (Baker, error) 
 const deleteReview = `-- name: DeleteReview :one
 DELETE FROM reviews
 WHERE id = $1
-RETURNING id, baker_id, review, rating, user_id
+RETURNING id, baker_id, review, rating, user_id, created_at
 `
 
 func (q *Queries) DeleteReview(ctx context.Context, id uuid.UUID) (Review, error) {
@@ -167,12 +170,13 @@ func (q *Queries) DeleteReview(ctx context.Context, id uuid.UUID) (Review, error
 		&i.Review,
 		&i.Rating,
 		&i.UserID,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getAllReviews = `-- name: GetAllReviews :many
-SELECT id, baker_id, review, rating, user_id FROM reviews
+SELECT id, baker_id, review, rating, user_id, created_at FROM reviews
 WHERE baker_id = $1
 `
 
@@ -191,6 +195,7 @@ func (q *Queries) GetAllReviews(ctx context.Context, bakerID uuid.UUID) ([]Revie
 			&i.Review,
 			&i.Rating,
 			&i.UserID,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -288,7 +293,7 @@ func (q *Queries) GetBakersByPostcode(ctx context.Context, postcode string) ([]B
 }
 
 const getReviewsByUserId = `-- name: GetReviewsByUserId :many
-SELECT id, baker_id, review, rating, user_id FROM reviews
+SELECT id, baker_id, review, rating, user_id, created_at FROM reviews
 WHERE user_id = $1
 `
 
@@ -307,6 +312,7 @@ func (q *Queries) GetReviewsByUserId(ctx context.Context, userID uuid.UUID) ([]R
 			&i.Review,
 			&i.Rating,
 			&i.UserID,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}

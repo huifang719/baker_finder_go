@@ -16,7 +16,7 @@ type BakerParamters struct {
 	Suburb  string `json:"suburb"`
 	Postcode  string `json:"postcode"`
 	Contact   string `json:"contact"`
-	Specialty string `json:"specialty"`
+	Speciality string `json:"speciality"`
 	Creator   uuid.UUID `json:"creator"`
 }
 func (app *application)  handlerCreateBaker(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func (app *application)  handlerCreateBaker(w http.ResponseWriter, r *http.Reque
 		Suburb:    params.Suburb,
 		Postcode:  params.Postcode,
 		Contact:   params.Contact,
-		Specialty: params.Specialty,
+		Specialty: params.Speciality,
 		Creator:   params.Creator,
 	})
 	if err != nil {
@@ -101,7 +101,7 @@ func (app *application) handlerUpdateBaker(w http.ResponseWriter, r *http.Reques
 		Suburb:    params.Suburb,
 		Postcode:  params.Postcode,
 		Contact:   params.Contact,
-		Specialty: params.Specialty,
+		Specialty: params.Speciality,
 		Creator:   params.Creator,
 	})
 	if err != nil {
