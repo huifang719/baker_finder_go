@@ -25,8 +25,31 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, 400, "Invalid request")
 		return
 	}
+	user, err := app.config.DB.GetUserById(r.Context(), params.UserID)
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get the user")
+	}
+	var alreadyExistReview bool
+	existReview, err := app.config.DB.CheckExistReviewForBaker(r.Context(), database.CheckExistReviewForBakerParams{
+		BakerID: params.BakerID,
+		UserID: params.UserID,
+	})
+	if err != nil {
+		app.errorLog.Println(err)
+		if err.Error() == "sql: no rows in result set" {
+			alreadyExistReview = false
+		} 	
+	} else {
+		app.infoLog.Println(existReview)
+		alreadyExistReview = true
+	}
+	
+	if alreadyExistReview {
+		respondWithError(w, 400, "You have already reviewed this baker")
+		return
+	}
 	// Create a new baker
-
 	review, err := app.config.DB.CreateReview(r.Context(), database.CreateReviewParams{
 		ID:       uuid.New(),
 		BakerID:  params.BakerID,
@@ -37,10 +60,6 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 	})
 	if err != nil {
 		app.errorLog.Println(err)
-		if err.Error() == "pq: duplicate key value violates unique constraint \"reviews_user_id_baker_id_key\"" {
-			respondWithError(w, 400, "You have already reviewed this baker")
-			return
-		}
 		if err.Error() == "pq: insert or update on table \"reviews\" violates foreign key constraint \"reviews_baker_id_fkey\"" {
 			respondWithError(w, 400, "This baker does not exist")
 			return
@@ -48,12 +67,20 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, 500, "Failed to post the review")
 		return
 	}
-	repondWithJSON(w, 200, databaseReviewtoReview(review))
+
+	bakerName, err := app.config.DB.GetBakerByBakerId(r.Context(), review.BakerID)
+		if err != nil {
+			app.errorLog.Println(err)
+			respondWithError(w, 500, "invalid baker id")
+			return 
+		}
+	repondWithJSON(w, 200, databaseReviewtoReview(review, bakerName, user))
 }
 
 func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Request) {
 	type paramters struct {
 		ReviewID  uuid.UUID `json:"review_id"`
+		UserID    uuid.UUID `json:"user_id"`
 	}
 	decoder := json.NewDecoder(r.Body)
 	params := paramters{}
@@ -63,7 +90,12 @@ func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, 400, "Invalid request")
 		return
 	}
-
+	// Get the user
+	user, err := app.config.DB.GetUserById(r.Context(), params.UserID)
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get the user")
+	}
 	// Delete a review
 	review,err := app.config.DB.DeleteReview(r.Context(), params.ReviewID)
 	if err != nil {
@@ -71,7 +103,13 @@ func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, 500, "Failed to delete the review")
 		return
 	}
-	repondWithJSON(w, 200, databaseReviewtoReview(review))
+	bakerName, err := app.config.DB.GetBakerByBakerId(r.Context(), review.BakerID)
+		if err != nil {
+			app.errorLog.Println(err)
+			respondWithError(w, 500, "invalid baker id")
+			return 
+		}
+	repondWithJSON(w, 200, databaseReviewtoReview(review, bakerName, user))
 }
 
 // get all reviews for a baker
@@ -95,9 +133,18 @@ func (app *application) handlerGetReviews(w http.ResponseWriter, r *http.Request
 		respondWithError(w, 500, "Failed to get the reviews")
 		return
 	}
+	bakerName, err := app.config.DB.GetBakerByBakerId(r.Context(), params.BakerID)
+		if err != nil {
+			app.errorLog.Println(err)
+		}
 	proceedReviews := []Review{}
 	for _, review := range reviews {
-		proceedReviews = append(proceedReviews, databaseReviewtoReview(review))
+		user, err := app.config.DB.GetUserById(r.Context(), review.UserID)
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get the user")
+	}
+		proceedReviews = append(proceedReviews, databaseReviewtoReview(review, bakerName, user))
 	}
 	repondWithJSON(w, 200, proceedReviews)
 }
@@ -123,9 +170,19 @@ func (app *application) handlerGetUserReviews(w http.ResponseWriter, r *http.Req
 		respondWithError(w, 500, "Failed to get the reviews")
 		return
 	}
+	user, err := app.config.DB.GetUserById(r.Context(), params.UserID)
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get the user")
+	}
 	proceedReviews := []Review{}
 	for _, review := range reviews {
-		proceedReviews = append(proceedReviews, databaseReviewtoReview(review))
+		bakerName, err := app.config.DB.GetBakerByBakerId(r.Context(), review.BakerID)
+		if err != nil {
+			app.errorLog.Println(err)
+		}
+		
+		proceedReviews = append(proceedReviews, databaseReviewtoReview(review, bakerName, user))
 	}
 	repondWithJSON(w, 200, proceedReviews)
 }

@@ -27,6 +27,7 @@ type Review struct {
 	UserID  uuid.UUID	`json:"user_id"`
 	UserName string	`json:"user_name"`
 	CreatedAt time.Time	`json:"created_at"`
+	BakerName string	`json:"baker_name"`
 }
 
 type User struct {
@@ -49,7 +50,7 @@ func databaseBakertoBaker(dbBaker database.Baker) Baker {
 	}
 }	  
 
-func databaseReviewtoReview(dbReview database.Review) Review {
+func databaseReviewtoReview(dbReview database.Review, dbBaker database.Baker, dbUser database.User ) Review {
 	return Review{
 		ID:      dbReview.ID,
 		BakerID: dbReview.BakerID,
@@ -57,6 +58,8 @@ func databaseReviewtoReview(dbReview database.Review) Review {
 		Rating:  dbReview.Rating,
 		UserID:  dbReview.UserID,
 		CreatedAt: dbReview.CreatedAt,
+		BakerName: dbBaker.Name,
+		UserName: dbUser.UserName,
 	}
 }
 

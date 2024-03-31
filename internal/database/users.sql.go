@@ -12,6 +12,30 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkExistReviewForBaker = `-- name: CheckExistReviewForBaker :one
+SELECT id, baker_id, review, rating, user_id, created_at FROM reviews
+WHERE baker_id = $1 AND user_id = $2
+`
+
+type CheckExistReviewForBakerParams struct {
+	BakerID uuid.UUID
+	UserID  uuid.UUID
+}
+
+func (q *Queries) CheckExistReviewForBaker(ctx context.Context, arg CheckExistReviewForBakerParams) (Review, error) {
+	row := q.db.QueryRowContext(ctx, checkExistReviewForBaker, arg.BakerID, arg.UserID)
+	var i Review
+	err := row.Scan(
+		&i.ID,
+		&i.BakerID,
+		&i.Review,
+		&i.Rating,
+		&i.UserID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createBaker = `-- name: CreateBaker :one
 INSERT INTO bakers (id, img, name, address, suburb, postcode, contact, specialty, creator)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -208,6 +232,28 @@ func (q *Queries) GetAllReviews(ctx context.Context, bakerID uuid.UUID) ([]Revie
 		return nil, err
 	}
 	return items, nil
+}
+
+const getBakerByBakerId = `-- name: GetBakerByBakerId :one
+SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FROM bakers
+WHERE id = $1
+`
+
+func (q *Queries) GetBakerByBakerId(ctx context.Context, id uuid.UUID) (Baker, error) {
+	row := q.db.QueryRowContext(ctx, getBakerByBakerId, id)
+	var i Baker
+	err := row.Scan(
+		&i.ID,
+		&i.Img,
+		&i.Name,
+		&i.Address,
+		&i.Suburb,
+		&i.Postcode,
+		&i.Contact,
+		&i.Specialty,
+		&i.Creator,
+	)
+	return i, err
 }
 
 const getBakerByCreator = `-- name: GetBakerByCreator :one

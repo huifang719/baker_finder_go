@@ -47,6 +47,10 @@ SELECT * FROM bakers;
 SELECT * FROM users
 WHERE id = $1;
 
+-- name: GetBakerByBakerId :one
+SELECT * FROM bakers
+WHERE id = $1;
+
 -- name: GetReviewsByUserId :many
 SELECT * FROM reviews
 WHERE user_id = $1;
@@ -58,3 +62,7 @@ WHERE email = $1;
 -- name: GetBakerByCreator :one
 SELECT * FROM bakers
 WHERE creator = $1;
+
+-- name: CheckExistReviewForBaker :one
+SELECT * FROM reviews
+WHERE baker_id = $1 AND user_id = $2;
