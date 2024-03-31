@@ -154,3 +154,24 @@ func (app *application) handlerGetAllBakers(w http.ResponseWriter, r *http.Reque
 	}
 	repondWithJSON(w, 200, proceedBakers)
 }
+
+func (app *application) handlerGetBakerByCreator(w http.ResponseWriter, r *http.Request) {
+	type paramters struct {
+		Creator uuid.UUID `json:"user_id"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	params := paramters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, 400, "Invalid request")
+		return
+	}
+
+	baker, err := app.config.DB.GetBakerByCreator(r.Context(), params.Creator)
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get reviews")
+		return
+	}
+	repondWithJSON(w, 200, databaseBakertoBaker(baker))
+}

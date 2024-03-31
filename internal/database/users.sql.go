@@ -205,6 +205,28 @@ func (q *Queries) GetAllReviews(ctx context.Context, bakerID uuid.UUID) ([]Revie
 	return items, nil
 }
 
+const getBakerByCreator = `-- name: GetBakerByCreator :one
+SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FROM bakers
+WHERE creator = $1
+`
+
+func (q *Queries) GetBakerByCreator(ctx context.Context, creator uuid.UUID) (Baker, error) {
+	row := q.db.QueryRowContext(ctx, getBakerByCreator, creator)
+	var i Baker
+	err := row.Scan(
+		&i.ID,
+		&i.Img,
+		&i.Name,
+		&i.Address,
+		&i.Suburb,
+		&i.Postcode,
+		&i.Contact,
+		&i.Specialty,
+		&i.Creator,
+	)
+	return i, err
+}
+
 const getBakerById = `-- name: GetBakerById :one
 SELECT id, img, name, address, suburb, postcode, contact, specialty, creator FROM bakers
 WHERE id = $1
@@ -297,6 +319,26 @@ func (q *Queries) GetReviewsByUserId(ctx context.Context, userID uuid.UUID) ([]R
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, created_at, updated_at, user_name, user_type, email, password_digest FROM users
+WHERE email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserName,
+		&i.UserType,
+		&i.Email,
+		&i.PasswordDigest,
+	)
+	return i, err
 }
 
 const getUserById = `-- name: GetUserById :one

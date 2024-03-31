@@ -50,3 +50,11 @@ WHERE id = $1;
 -- name: GetReviewsByUserId :many
 SELECT * FROM reviews
 WHERE user_id = $1;
+
+-- name: GetUserByEmail :one
+SELECT * FROM users
+WHERE email = $1;
+
+-- name: GetBakerByCreator :one
+SELECT * FROM bakers
+WHERE creator = $1;

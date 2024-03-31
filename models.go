@@ -29,6 +29,7 @@ type Review struct {
 type User struct {
 	ID             uuid.UUID `json:"user_id"`
 	UserName       string	`json:"user_name"`
+	UserType       string	`json:"user_type"`
 }
 
 func databaseBakertoBaker(dbBaker database.Baker) Baker {
@@ -59,5 +60,6 @@ func databaseUsertoUser(dbUser database.User) User {
 	return User{
 		ID:       dbUser.ID,
 		UserName: dbUser.UserName,
+		UserType: dbUser.UserType,
 	}
 }
