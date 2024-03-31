@@ -42,3 +42,11 @@ WHERE id = $1;
 
 -- name: ListAllBakers :many
 SELECT * FROM bakers;
+
+-- name: GetUserById :one
+SELECT * FROM users
+WHERE id = $1;
+
+-- name: GetReviewsByUserId :many
+SELECT * FROM reviews
+WHERE user_id = $1;

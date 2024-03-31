@@ -17,6 +17,20 @@ type Baker struct {
 	Creator   uuid.UUID `json:"creator"`
 }
 
+type Review struct {
+	ID      uuid.UUID `json:"review_id"`
+	BakerID uuid.UUID `json:"baker_id"`
+	Review  string	`json:"review"`
+	Rating  string	`json:"rating"`
+	UserID  uuid.UUID	`json:"user_id"`
+	UserName string	`json:"user_name"`
+}
+
+type User struct {
+	ID             uuid.UUID `json:"user_id"`
+	UserName       string	`json:"user_name"`
+}
+
 func databaseBakertoBaker(dbBaker database.Baker) Baker {
 	return Baker{
 		ID:        dbBaker.ID,
@@ -30,3 +44,20 @@ func databaseBakertoBaker(dbBaker database.Baker) Baker {
 		Creator:   dbBaker.Creator,
 	}
 }	  
+
+func databaseReviewtoReview(dbReview database.Review) Review {
+	return Review{
+		ID:      dbReview.ID,
+		BakerID: dbReview.BakerID,
+		Review:  dbReview.Review,
+		Rating:  dbReview.Rating,
+		UserID:  dbReview.UserID,
+	}
+}
+
+func databaseUsertoUser(dbUser database.User) User {
+	return User{
+		ID:       dbUser.ID,
+		UserName: dbUser.UserName,
+	}
+}

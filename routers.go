@@ -30,5 +30,6 @@ func (app *application) routes() http.Handler {
 	v1Router.Patch("/baker", app.handlerUpdateBaker)
 	v1Router.Post("/user", app.handlerCreateUser)
 	v1Router.Get("/listbakers", app.handlerGetAllBakers)
+	v1Router.Get("/listreviews", app. handlerGetUserReviews)
 	return router
 }

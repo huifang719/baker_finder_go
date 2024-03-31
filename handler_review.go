@@ -38,7 +38,7 @@ func (app *application)  handlerCreateReview(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, 500, "Failed to post the review")
 		return
 	}
-	repondWithJSON(w, 200, review)	
+	repondWithJSON(w, 200, databaseReviewtoReview(review))
 }
 
 func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +61,7 @@ func (app *application) handlerDeleteReviews(w http.ResponseWriter, r *http.Requ
 		respondWithError(w, 500, "Failed to delete the review")
 		return
 	}
-	repondWithJSON(w, 200, review)
+	repondWithJSON(w, 200, databaseReviewtoReview(review))
 }
 
 // get all reviews for a baker
@@ -85,5 +85,37 @@ func (app *application) handlerGetReviews(w http.ResponseWriter, r *http.Request
 		respondWithError(w, 500, "Failed to get the reviews")
 		return
 	}
-	repondWithJSON(w, 200, reviews)
+	proceedReviews := []Review{}
+	for _, review := range reviews {
+		proceedReviews = append(proceedReviews, databaseReviewtoReview(review))
+	}
+	repondWithJSON(w, 200, proceedReviews)
+}
+
+// get all reviews for an user
+func (app *application) handlerGetUserReviews(w http.ResponseWriter, r *http.Request) {
+	type paramters struct {
+		UserID  uuid.UUID `json:"user_id"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	params := paramters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		app.errorLog.Print(err)
+		respondWithError(w, 400, "Invalid request")
+		return
+	}
+
+	// Get all reviews for a user
+	reviews,err := app.config.DB.GetReviewsByUserId(r.Context(), params.UserID)
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get the reviews")
+		return
+	}
+	proceedReviews := []Review{}
+	for _, review := range reviews {
+		proceedReviews = append(proceedReviews, databaseReviewtoReview(review))
+	}
+	repondWithJSON(w, 200, proceedReviews)
 }

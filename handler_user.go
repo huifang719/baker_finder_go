@@ -47,5 +47,6 @@ func (app *application)  handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		respondWithError(w, 500, "Failed to create user")
 		return
 	}
-	repondWithJSON(w, 200, user)
+	
+	repondWithJSON(w, 200, databaseUsertoUser(user))
 }
