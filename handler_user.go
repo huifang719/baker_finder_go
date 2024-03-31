@@ -50,3 +50,24 @@ func (app *application)  handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	
 	repondWithJSON(w, 200, databaseUsertoUser(user))
 }
+
+func (app *application)  handlerGetUser(w http.ResponseWriter, r *http.Request) {
+	type paramters struct {
+		UserID string `json:"user_id"`
+	}
+	decoder := json.NewDecoder(r.Body)
+	params := paramters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		app.errorLog.Print(err)
+		respondWithError(w, 400, "Invalid request")
+		return
+	}
+	user, err := app.config.DB.GetUserById(r.Context(), uuid.MustParse(params.UserID))
+	if err != nil {
+		app.errorLog.Println(err)
+		respondWithError(w, 500, "Failed to get user")
+		return
+	}
+	repondWithJSON(w, 200, databaseUsertoUser(user))
+}
