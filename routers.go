@@ -9,7 +9,7 @@ import (
 
 func (app *application) routes() http.Handler {
 	router := chi.NewRouter()
-	router.Use(cors.Handler(cors.Options{AllowedOrigins: []string{"http://localhost:3000", "http://localhost:3001", "http://localhost:8081" },
+	router.Use(cors.Handler(cors.Options{AllowedOrigins: []string{"http://localhost:3000", "http://localhost:3001", "http://localhost:8081", "http://192.168.1.100:8081", "http://121.45.87.60:8081", "exp://192.168.1.100:8081s" },
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders: []string{"Link"},
@@ -33,5 +33,6 @@ func (app *application) routes() http.Handler {
 	v1Router.Get("/listbakers", app.handlerGetAllBakers)
 	v1Router.Post("/listreviews", app. handlerGetUserReviews)
 	v1Router.Post("/getmybaker", app.handlerGetBakerByCreator)
+	v1Router.Get("/fetchkey", app.handlerFetchKey)
 	return router
 }
