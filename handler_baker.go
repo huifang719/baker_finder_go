@@ -50,7 +50,7 @@ func (app *application)  handlerCreateBaker(w http.ResponseWriter, r *http.Reque
 		respondWithError(w, 500, "Failed to create baker")
 		return
 	}
-	repondWithJSON(w, 200, baker)	
+	repondWithJSON(w, 200, databaseBakertoBaker(baker))	
 }
 
 func (app *application) handlerDeleteBaker(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +72,7 @@ func (app *application) handlerDeleteBaker(w http.ResponseWriter, r *http.Reques
 		respondWithError(w, 500, "Failed to delete baker")
 		return
 	}
-	repondWithJSON(w, 200, baker)	
+	repondWithJSON(w, 200, databaseBakertoBaker(baker))	
 }
 
 // update baker
@@ -109,7 +109,7 @@ func (app *application) handlerUpdateBaker(w http.ResponseWriter, r *http.Reques
 		respondWithError(w, 500, "Failed to update baker")
 		return
 	}
-	repondWithJSON(w, 200, updatedBaker)
+	repondWithJSON(w, 200, databaseBakertoBaker(updatedBaker))
 }
 // get all bakers from the same postcode
 func (app *application) handlerGetBakers(w http.ResponseWriter, r *http.Request) {
@@ -131,8 +131,11 @@ func (app *application) handlerGetBakers(w http.ResponseWriter, r *http.Request)
 		respondWithError(w, 500, "Failed to get bakers")
 		return
 	}
- 
-	repondWithJSON(w, 200, bakers)
+	proceedBakers := []Baker{}
+	for _, baker := range bakers {
+		proceedBakers = append(proceedBakers, databaseBakertoBaker(baker))
+	}
+	repondWithJSON(w, 200, proceedBakers)
 }
 
 // get all bakers from database
@@ -145,6 +148,9 @@ func (app *application) handlerGetAllBakers(w http.ResponseWriter, r *http.Reque
 		respondWithError(w, 500, "Failed to get bakers")
 		return
 	}
- 
-	repondWithJSON(w, 200, bakers)
+	proceedBakers := []Baker{}
+	for _, baker := range bakers {
+		proceedBakers = append(proceedBakers, databaseBakertoBaker(baker))
+	}
+	repondWithJSON(w, 200, proceedBakers)
 }
