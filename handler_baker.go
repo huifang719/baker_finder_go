@@ -86,13 +86,13 @@ func (app *application) handlerUpdateBaker(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	bakerToUpdate, err := app.config.DB.GetBakerById(r.Context(), params.BakerID)
-	if err != nil {
-		app.errorLog.Println(err)
-		respondWithError(w, 500, "Failed to get baker")
-		return
-	}
-	app.infoLog.Println(bakerToUpdate)
+	// bakerToUpdate, err := app.config.DB.GetBakerById(r.Context(), params.BakerID)
+	// if err != nil {
+	// 	app.errorLog.Println(err)
+	// 	respondWithError(w, 500, "Failed to get baker")
+	// 	return
+	// }
+	// app.infoLog.Println(bakerToUpdate)
 	updatedBaker, err := app.config.DB.UpdateBaker(r.Context(), database.UpdateBakerParams{
 		ID:        params.BakerID,
 		Name:      params.Name,
